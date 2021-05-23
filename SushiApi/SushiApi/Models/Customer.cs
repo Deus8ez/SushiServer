@@ -12,6 +12,7 @@ namespace SushiApi.Models
         public int ID { get; set; }
         public string CustomerName { get; set; }
         public int CustomerPhoneNumber { get; set; }
+        public string CustomerAddress { get; set; }
         public ICollection<Order> Orders { get; set; }
     }
 }

@@ -10,8 +10,8 @@ using SushiApi.Data;
 namespace SushiApi.Migrations
 {
     [DbContext(typeof(SushiContext))]
-    [Migration("20210515060146_initial")]
-    partial class initial
+    [Migration("20210522145341_key")]
+    partial class key
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,6 +27,9 @@ namespace SushiApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CustomerAddress")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerName")
                         .HasColumnType("nvarchar(max)");
@@ -49,11 +52,11 @@ namespace SushiApi.Migrations
                     b.Property<int>("CustomerID")
                         .HasColumnType("int");
 
-                    b.Property<string>("CustomerPayment")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("CustomerPayment")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("OrderPlaced")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("OrderPlaced")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -72,12 +75,40 @@ namespace SushiApi.Migrations
                     b.Property<decimal>("Cost")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<bool>("Custom")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Rating")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
                     b.ToTable("Sets");
+                });
+
+            modelBuilder.Entity("SushiApi.Models.SetsInOrders", b =>
+                {
+                    b.Property<int>("SetsInOrdersID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("OrderID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SushiInSetsID")
+                        .HasColumnType("int");
+
+                    b.HasKey("SetsInOrdersID");
+
+                    b.HasIndex("OrderID");
+
+                    b.HasIndex("SushiInSetsID");
+
+                    b.ToTable("SetsInOrders");
                 });
 
             modelBuilder.Entity("SushiApi.Models.Sushi", b =>
@@ -86,6 +117,9 @@ namespace SushiApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("Amount")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("CostPerPiece")
                         .HasColumnType("decimal(18,2)");
@@ -105,10 +139,10 @@ namespace SushiApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("OrderID")
+                    b.Property<int>("SetID")
                         .HasColumnType("int");
 
-                    b.Property<int>("SetID")
+                    b.Property<int?>("SushiAmount")
                         .HasColumnType("int");
 
                     b.Property<int>("SushiID")
@@ -116,13 +150,32 @@ namespace SushiApi.Migrations
 
                     b.HasKey("SushiInSetsID");
 
-                    b.HasIndex("OrderID");
-
                     b.HasIndex("SetID");
 
                     b.HasIndex("SushiID");
 
                     b.ToTable("SushiInSets");
+                });
+
+            modelBuilder.Entity("SushiApi.Models.User", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nickname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("SushiApi.Models.Order", b =>
@@ -136,14 +189,27 @@ namespace SushiApi.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("SushiApi.Models.SushiInSets", b =>
+            modelBuilder.Entity("SushiApi.Models.SetsInOrders", b =>
                 {
                     b.HasOne("SushiApi.Models.Order", "Order")
-                        .WithMany("SushiInSets")
+                        .WithMany()
                         .HasForeignKey("OrderID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SushiApi.Models.SushiInSets", "SushiInSets")
+                        .WithMany()
+                        .HasForeignKey("SushiInSetsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("SushiInSets");
+                });
+
+            modelBuilder.Entity("SushiApi.Models.SushiInSets", b =>
+                {
                     b.HasOne("SushiApi.Models.Set", "Set")
                         .WithMany("SushiInSets")
                         .HasForeignKey("SetID")
@@ -156,8 +222,6 @@ namespace SushiApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Order");
-
                     b.Navigation("Set");
 
                     b.Navigation("Sushi");
@@ -166,11 +230,6 @@ namespace SushiApi.Migrations
             modelBuilder.Entity("SushiApi.Models.Customer", b =>
                 {
                     b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("SushiApi.Models.Order", b =>
-                {
-                    b.Navigation("SushiInSets");
                 });
 
             modelBuilder.Entity("SushiApi.Models.Set", b =>

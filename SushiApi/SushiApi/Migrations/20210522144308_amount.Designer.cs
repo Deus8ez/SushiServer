@@ -10,8 +10,8 @@ using SushiApi.Data;
 namespace SushiApi.Migrations
 {
     [DbContext(typeof(SushiContext))]
-    [Migration("20210516052923_users")]
-    partial class users
+    [Migration("20210522144308_amount")]
+    partial class amount
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,6 +27,9 @@ namespace SushiApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CustomerAddress")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomerName")
                         .HasColumnType("nvarchar(max)");
@@ -49,11 +52,11 @@ namespace SushiApi.Migrations
                     b.Property<int>("CustomerID")
                         .HasColumnType("int");
 
-                    b.Property<string>("CustomerPayment")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("CustomerPayment")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("OrderPlaced")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("OrderPlaced")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -71,6 +74,9 @@ namespace SushiApi.Migrations
 
                     b.Property<decimal>("Cost")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("Custom")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -112,6 +118,9 @@ namespace SushiApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("Amount")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("CostPerPiece")
                         .HasColumnType("decimal(18,2)");
 
@@ -130,18 +139,16 @@ namespace SushiApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("OrderID")
+                    b.Property<int>("SetID")
                         .HasColumnType("int");
 
-                    b.Property<int>("SetID")
+                    b.Property<int>("SushiAmount")
                         .HasColumnType("int");
 
                     b.Property<int>("SushiID")
                         .HasColumnType("int");
 
                     b.HasKey("SushiInSetsID");
-
-                    b.HasIndex("OrderID");
 
                     b.HasIndex("SetID");
 
@@ -203,10 +210,6 @@ namespace SushiApi.Migrations
 
             modelBuilder.Entity("SushiApi.Models.SushiInSets", b =>
                 {
-                    b.HasOne("SushiApi.Models.Order", null)
-                        .WithMany("SushiInSets")
-                        .HasForeignKey("OrderID");
-
                     b.HasOne("SushiApi.Models.Set", "Set")
                         .WithMany("SushiInSets")
                         .HasForeignKey("SetID")
@@ -227,11 +230,6 @@ namespace SushiApi.Migrations
             modelBuilder.Entity("SushiApi.Models.Customer", b =>
                 {
                     b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("SushiApi.Models.Order", b =>
-                {
-                    b.Navigation("SushiInSets");
                 });
 
             modelBuilder.Entity("SushiApi.Models.Set", b =>

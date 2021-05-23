@@ -2,22 +2,23 @@
 
 namespace SushiApi.Migrations
 {
-    public partial class user : Migration
+    public partial class amount : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "Rating",
-                table: "Sets",
+                name: "SushiAmount",
+                table: "SushiInSets",
                 type: "int",
-                nullable: true);
+                nullable: false,
+                defaultValue: 0);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Rating",
-                table: "Sets");
+                name: "SushiAmount",
+                table: "SushiInSets");
         }
     }
 }

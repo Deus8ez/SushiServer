@@ -15,10 +15,10 @@ namespace SushiApi.Models
 
         public decimal CustomerPayment { get; set; }
 
-        public DateTime OrderPlaced { get; set; }
+        public string OrderPlaced { get; set; }
 
         public Customer Customer { get; set; }
 
-        public virtual ICollection<SushiInSets> SushiInSets { get; set; }
+        //public virtual ICollection<SushiInSets> SushiInSets { get; set; }
     }
 }

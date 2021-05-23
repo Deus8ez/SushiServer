@@ -12,7 +12,7 @@ namespace SushiApi.Models
         public int ID { get; set; }
         public string Name { get; set; }
         public decimal CostPerPiece { get; set; }
-
+        public int? Amount { get; set; }
         public virtual ICollection<SushiInSets> SushiInSets { get; set; }
 
     }

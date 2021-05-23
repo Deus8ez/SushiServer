@@ -15,6 +15,8 @@ namespace SushiApi.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<SetsInOrders> SetsInOrders { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<SushiInSets> SushiInSets { get; set; }
+        public DbSet<SetRatingHistory> SetRatingHistories { get; set; }
 
         public SushiContext(DbContextOptions<SushiContext> options) : base(options)
         {

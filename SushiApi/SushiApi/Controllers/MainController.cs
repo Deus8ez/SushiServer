@@ -29,9 +29,23 @@ namespace SushiApi.Controllers
             var sushis = await _context.Sushis.ToListAsync();
             var sets = await _context.Sets.ToListAsync();
 
+            List<SetViewModel> setsDetailed = new List<SetViewModel>();
+
+            foreach (Set set in sets)
+            {
+                setsDetailed.Add(new SetViewModel
+                {
+                    Set = set,
+                    Sushis = (from sushiTable in _context.Sushis
+                              join sushiInSetsTable in _context.SushiInSets on sushiTable.ID equals sushiInSetsTable.SushiID
+                              where sushiInSetsTable.SetID == set.ID
+                              select sushiTable).ToList()
+                });
+            };
+
             return new SushiViewModel
             {
-                Sets = sets,
+                Sets = setsDetailed,
                 Sushis = sushis
             };
         }
@@ -39,7 +53,33 @@ namespace SushiApi.Controllers
         [HttpPost]
         public async Task PlaceOrder(OrderViewModel orderData)
         {
+
+            foreach (SetViewModel setView in orderData.Sets)
+            {
+                if (setView.Set.Custom == true && !_context.Sets.Contains(setView.Set))
+                {
+                    _context.Sets.Add(setView.Set);
+
+                    await _context.SaveChangesAsync();
+
+                    foreach (Sushi sushi in setView.Sushis)
+                    {
+                        _context.SushiInSets.Add(new SushiInSets
+                        {
+                            SetID = setView.Set.ID,
+                            SushiID = sushi.ID,
+                            SushiAmount = sushi.Amount
+                        });
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+
             _context.Customers.Add(orderData.Customer);
+
+            await _context.SaveChangesAsync();
 
             var neworder = new Order
             {
@@ -50,24 +90,25 @@ namespace SushiApi.Controllers
 
             _context.Orders.Add(neworder);
 
+            await _context.SaveChangesAsync();
+
             foreach (SetViewModel setView in orderData.Sets)
             {
-                if (setView.Set.Custom == true)
+                _context.SetsInOrders.Add(new SetsInOrders
                 {
-                    _context.Sets.Add(setView.Set);
-
-                    foreach (Sushi sushi in setView.Sushis)
-                    {
-                        _context.SushiInSets.Add(new SushiInSets
-                        {
-                            SetID = setView.Set.ID,
-                            SushiID = sushi.ID
-                        });
-                    }
-                }
+                    SetID = setView.Set.ID,
+                    OrderID = neworder.ID,
+                });
             }
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
 
@@ -82,7 +123,26 @@ namespace SushiApi.Controllers
                 return;
             }
 
-            set.Rating = data.Rating;
+            double avgRating = 0;
+
+            List<SetRatingHistory> SetRatings = _context.SetRatingHistories
+                .Where(x => x.SetID == data.SetID)
+                .ToList();
+
+            foreach (SetRatingHistory e in SetRatings)
+            {
+                avgRating += e.Rating;
+            }
+
+            set.Rating = (int)Math.Ceiling((avgRating + data.Rating) / (SetRatings.Count + 1));
+
+            _context.SetRatingHistories.Add(
+                new SetRatingHistory
+                {
+                    SetID = data.SetID,
+                    Rating = data.Rating
+                }
+            );
 
             await _context.SaveChangesAsync();
         }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SushiApi.Data;
 
 namespace SushiApi.Migrations
 {
     [DbContext(typeof(SushiContext))]
-    partial class SushiContextModelSnapshot : ModelSnapshot
+    [Migration("20210522124247_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,26 +89,6 @@ namespace SushiApi.Migrations
                     b.ToTable("Sets");
                 });
 
-            modelBuilder.Entity("SushiApi.Models.SetRatingHistory", b =>
-                {
-                    b.Property<int>("SetInRatingHistoryID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SetID")
-                        .HasColumnType("int");
-
-                    b.HasKey("SetInRatingHistoryID");
-
-                    b.HasIndex("SetID");
-
-                    b.ToTable("SetRatingHistories");
-                });
-
             modelBuilder.Entity("SushiApi.Models.SetsInOrders", b =>
                 {
                     b.Property<int>("SetsInOrdersID")
@@ -117,14 +99,14 @@ namespace SushiApi.Migrations
                     b.Property<int>("OrderID")
                         .HasColumnType("int");
 
-                    b.Property<int>("SetID")
+                    b.Property<int>("SushiInSetsID")
                         .HasColumnType("int");
 
                     b.HasKey("SetsInOrdersID");
 
                     b.HasIndex("OrderID");
 
-                    b.HasIndex("SetID");
+                    b.HasIndex("SushiInSetsID");
 
                     b.ToTable("SetsInOrders");
                 });
@@ -158,9 +140,6 @@ namespace SushiApi.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("SetID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SushiAmount")
                         .HasColumnType("int");
 
                     b.Property<int>("SushiID")
@@ -207,17 +186,6 @@ namespace SushiApi.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("SushiApi.Models.SetRatingHistory", b =>
-                {
-                    b.HasOne("SushiApi.Models.Set", "Set")
-                        .WithMany()
-                        .HasForeignKey("SetID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Set");
-                });
-
             modelBuilder.Entity("SushiApi.Models.SetsInOrders", b =>
                 {
                     b.HasOne("SushiApi.Models.Order", "Order")
@@ -226,15 +194,15 @@ namespace SushiApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SushiApi.Models.Set", "Set")
+                    b.HasOne("SushiApi.Models.SushiInSets", "SushiInSets")
                         .WithMany()
-                        .HasForeignKey("SetID")
+                        .HasForeignKey("SushiInSetsID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
 
-                    b.Navigation("Set");
+                    b.Navigation("SushiInSets");
                 });
 
             modelBuilder.Entity("SushiApi.Models.SushiInSets", b =>

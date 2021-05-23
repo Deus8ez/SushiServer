@@ -7,7 +7,7 @@ namespace SushiApi.Models.ViewModels
 {
     public class SushiViewModel
     {
-        public List<Set> Sets { get; set; }
+        public List<SetViewModel> Sets { get; set; }
 
         public List<Sushi> Sushis { get; set; }
     }

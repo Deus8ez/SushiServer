@@ -11,7 +11,7 @@ namespace SushiApi.Models.ViewModels
 
         public Customer Customer { get; set; }
 
-        public DateTime OrderPlaced { get; set; }
+        public string OrderPlaced { get; set; }
 
         public decimal Payment { get; set; }
     }

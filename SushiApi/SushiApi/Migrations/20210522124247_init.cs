@@ -1,9 +1,8 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SushiApi.Migrations
 {
-    public partial class initial : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -14,7 +13,8 @@ namespace SushiApi.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CustomerName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CustomerPhoneNumber = table.Column<int>(type: "int", nullable: false)
+                    CustomerPhoneNumber = table.Column<int>(type: "int", nullable: false),
+                    CustomerAddress = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -28,7 +28,9 @@ namespace SushiApi.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Cost = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Cost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: true),
+                    Custom = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -42,11 +44,27 @@ namespace SushiApi.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CostPerPiece = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    CostPerPiece = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Amount = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Sushis", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nickname = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -56,8 +74,8 @@ namespace SushiApi.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CustomerID = table.Column<int>(type: "int", nullable: false),
-                    CustomerPayment = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrderPlaced = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CustomerPayment = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    OrderPlaced = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -77,18 +95,11 @@ namespace SushiApi.Migrations
                     SushiInSetsID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SetID = table.Column<int>(type: "int", nullable: false),
-                    SushiID = table.Column<int>(type: "int", nullable: false),
-                    OrderID = table.Column<int>(type: "int", nullable: false)
+                    SushiID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SushiInSets", x => x.SushiInSetsID);
-                    table.ForeignKey(
-                        name: "FK_SushiInSets_Orders_OrderID",
-                        column: x => x.OrderID,
-                        principalTable: "Orders",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_SushiInSets_Sets_SetID",
                         column: x => x.SetID,
@@ -103,15 +114,46 @@ namespace SushiApi.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "SetsInOrders",
+                columns: table => new
+                {
+                    SetsInOrdersID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SushiInSetsID = table.Column<int>(type: "int", nullable: false),
+                    OrderID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SetsInOrders", x => x.SetsInOrdersID);
+                    table.ForeignKey(
+                        name: "FK_SetsInOrders_Orders_OrderID",
+                        column: x => x.OrderID,
+                        principalTable: "Orders",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SetsInOrders_SushiInSets_SushiInSetsID",
+                        column: x => x.SushiInSetsID,
+                        principalTable: "SushiInSets",
+                        principalColumn: "SushiInSetsID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_CustomerID",
                 table: "Orders",
                 column: "CustomerID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SushiInSets_OrderID",
-                table: "SushiInSets",
+                name: "IX_SetsInOrders_OrderID",
+                table: "SetsInOrders",
                 column: "OrderID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SetsInOrders_SushiInSetsID",
+                table: "SetsInOrders",
+                column: "SushiInSetsID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SushiInSets_SetID",
@@ -127,19 +169,25 @@ namespace SushiApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "SushiInSets");
+                name: "SetsInOrders");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "SushiInSets");
+
+            migrationBuilder.DropTable(
+                name: "Customers");
 
             migrationBuilder.DropTable(
                 name: "Sets");
 
             migrationBuilder.DropTable(
                 name: "Sushis");
-
-            migrationBuilder.DropTable(
-                name: "Customers");
         }
     }
 }
