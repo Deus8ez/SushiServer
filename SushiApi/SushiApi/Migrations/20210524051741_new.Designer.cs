@@ -10,8 +10,8 @@ using SushiApi.Data;
 namespace SushiApi.Migrations
 {
     [DbContext(typeof(SushiContext))]
-    [Migration("20210522144308_amount")]
-    partial class amount
+    [Migration("20210524051741_new")]
+    partial class @new
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -89,6 +89,26 @@ namespace SushiApi.Migrations
                     b.ToTable("Sets");
                 });
 
+            modelBuilder.Entity("SushiApi.Models.SetRatingHistory", b =>
+                {
+                    b.Property<int>("SetInRatingHistoryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SetID")
+                        .HasColumnType("int");
+
+                    b.HasKey("SetInRatingHistoryID");
+
+                    b.HasIndex("SetID");
+
+                    b.ToTable("SetRatingHistories");
+                });
+
             modelBuilder.Entity("SushiApi.Models.SetsInOrders", b =>
                 {
                     b.Property<int>("SetsInOrdersID")
@@ -99,14 +119,14 @@ namespace SushiApi.Migrations
                     b.Property<int>("OrderID")
                         .HasColumnType("int");
 
-                    b.Property<int>("SushiInSetsID")
+                    b.Property<int>("SetID")
                         .HasColumnType("int");
 
                     b.HasKey("SetsInOrdersID");
 
                     b.HasIndex("OrderID");
 
-                    b.HasIndex("SushiInSetsID");
+                    b.HasIndex("SetID");
 
                     b.ToTable("SetsInOrders");
                 });
@@ -130,6 +150,22 @@ namespace SushiApi.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Sushis");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            Amount = 1,
+                            CostPerPiece = 2m,
+                            Name = "Avocado maki"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            Amount = 1,
+                            CostPerPiece = 3m,
+                            Name = "California"
+                        });
                 });
 
             modelBuilder.Entity("SushiApi.Models.SushiInSets", b =>
@@ -142,7 +178,7 @@ namespace SushiApi.Migrations
                     b.Property<int>("SetID")
                         .HasColumnType("int");
 
-                    b.Property<int>("SushiAmount")
+                    b.Property<int?>("SushiAmount")
                         .HasColumnType("int");
 
                     b.Property<int>("SushiID")
@@ -189,6 +225,17 @@ namespace SushiApi.Migrations
                     b.Navigation("Customer");
                 });
 
+            modelBuilder.Entity("SushiApi.Models.SetRatingHistory", b =>
+                {
+                    b.HasOne("SushiApi.Models.Set", "Set")
+                        .WithMany()
+                        .HasForeignKey("SetID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Set");
+                });
+
             modelBuilder.Entity("SushiApi.Models.SetsInOrders", b =>
                 {
                     b.HasOne("SushiApi.Models.Order", "Order")
@@ -197,15 +244,15 @@ namespace SushiApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SushiApi.Models.SushiInSets", "SushiInSets")
+                    b.HasOne("SushiApi.Models.Set", "Set")
                         .WithMany()
-                        .HasForeignKey("SushiInSetsID")
+                        .HasForeignKey("SetID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
 
-                    b.Navigation("SushiInSets");
+                    b.Navigation("Set");
                 });
 
             modelBuilder.Entity("SushiApi.Models.SushiInSets", b =>

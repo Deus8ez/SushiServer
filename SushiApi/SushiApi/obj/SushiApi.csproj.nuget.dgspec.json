@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "E:\\repos\\SushiVue\\SushiApi\\SushiApi\\SushiApi.csproj": {}
+    "D:\\repos\\SushiServer\\SushiApi\\SushiApi\\SushiApi.csproj": {}
   },
   "projects": {
-    "E:\\repos\\SushiVue\\SushiApi\\SushiApi\\SushiApi.csproj": {
+    "D:\\repos\\SushiServer\\SushiApi\\SushiApi\\SushiApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\repos\\SushiVue\\SushiApi\\SushiApi\\SushiApi.csproj",
+        "projectUniqueName": "D:\\repos\\SushiServer\\SushiApi\\SushiApi\\SushiApi.csproj",
         "projectName": "SushiApi",
-        "projectPath": "E:\\repos\\SushiVue\\SushiApi\\SushiApi\\SushiApi.csproj",
-        "packagesPath": "C:\\Users\\Darkhan\\.nuget\\packages\\",
-        "outputPath": "E:\\repos\\SushiVue\\SushiApi\\SushiApi\\obj\\",
+        "projectPath": "D:\\repos\\SushiServer\\SushiApi\\SushiApi\\SushiApi.csproj",
+        "packagesPath": "C:\\Users\\A_BYKODAROV\\.nuget\\packages\\",
+        "outputPath": "D:\\repos\\SushiServer\\SushiApi\\SushiApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Darkhan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\A_BYKODAROV\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [

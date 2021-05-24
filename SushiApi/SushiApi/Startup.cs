@@ -34,7 +34,7 @@ namespace SushiApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SushiApi", Version = "v1" });
             });
-            services.AddDbContext<SushiContext>(options => options.UseSqlServer(Configuration.GetConnectionString("HomeConnString")));
+            services.AddDbContext<SushiContext>(options => options.UseSqlServer(Configuration.GetConnectionString("JobConnString")));
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
                 builder.AllowAnyOrigin()
